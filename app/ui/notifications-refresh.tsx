@@ -2,12 +2,12 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { markAllNotificationsRead } from '@/app/actions/notifications'
 
-// router.refresh() でレイアウトを再取得し、未読バッジをクリアする
 export function NotificationsRefresh() {
   const router = useRouter()
   useEffect(() => {
-    router.refresh()
+    markAllNotificationsRead().then(() => router.refresh())
   }, [router])
   return null
 }

@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { Bell } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { markAllNotificationsRead } from '@/app/actions/notifications'
 import { NotificationItem } from '@/app/ui/notification-item'
 import { NotificationsRefresh } from '@/app/ui/notifications-refresh'
 import type { Notification } from '@/lib/definitions'
@@ -25,9 +24,6 @@ export default async function NotificationsPage() {
     .limit(50)
 
   const notifications = (raw ?? []) as unknown as Notification[]
-
-  // 未読を全て既読にする（バックグラウンド）
-  await markAllNotificationsRead(user.id)
 
   return (
     <div>
