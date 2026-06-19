@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/app/ui/sidebar'
+import { RightSidebar } from '@/app/ui/right-sidebar'
+import { MobileNav } from '@/app/ui/mobile-nav'
 import type { Profile } from '@/lib/definitions'
 
 export default async function MainLayout({
@@ -24,21 +26,25 @@ export default async function MainLayout({
       .eq('read', false),
   ])
 
-  if (!profile) {
-    // Server Components can't write cookies, so signOut() here doesn't clear
-    // the browser session. Redirect to the API route handler which CAN write
-    // cookies — it signs out properly so the proxy won't loop /login ↔ /home.
-    redirect('/api/auth/signout')
-  }
+  if (!profile) redirect('/api/auth/signout')
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen justify-center">
+      {/* Left sidebar */}
       <aside className="hidden md:block sticky top-0 h-screen w-[72px] xl:w-[275px] flex-shrink-0 border-r border-x-border overflow-hidden">
         <Sidebar profile={profile as Profile} unreadCount={unreadCount ?? 0} />
       </aside>
-      <main className="flex-1 max-w-[600px] min-h-screen border-r border-x-border">
+
+      {/* Main content */}
+      <main className="flex-1 min-w-0 max-w-[600px] min-h-screen border-r border-x-border pb-16 md:pb-0">
         {children}
       </main>
+
+      {/* Right sidebar */}
+      <RightSidebar userId={user.id} />
+
+      {/* Mobile bottom nav */}
+      <MobileNav unreadCount={unreadCount ?? 0} />
     </div>
   )
 }

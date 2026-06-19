@@ -1,7 +1,7 @@
 'use client'
 
 import { useOptimistic, useTransition, useState, useRef, useEffect } from 'react'
-import { Heart, MessageCircle } from 'lucide-react'
+import { Heart, MessageCircle, Repeat2, Share, BookmarkPlus } from 'lucide-react'
 import { likePost, unlikePost } from '@/app/actions/posts'
 import { createComment, getComments } from '@/app/actions/comments'
 import { formatTimeAgo } from '@/lib/utils'
@@ -103,6 +103,8 @@ export function PostCard({ post }: { post: PostWithLike }) {
   const [commentText, setCommentText] = useState('')
   const [commentPending, setCommentPending] = useState(false)
   const commentInputRef = useRef<HTMLTextAreaElement>(null)
+  const [reposted, setReposted] = useState(false)
+  const [repostCount, setRepostCount] = useState(0)
 
   const handleLike = () => {
     startTransition(async () => {
@@ -171,41 +173,60 @@ export function PostCard({ post }: { post: PostWithLike }) {
           )}
 
           {/* Action buttons */}
-          <div className="mt-3 flex items-center gap-6">
+          <div className="mt-3 flex items-center justify-between max-w-[300px]">
+            {/* Comment */}
             <button
               onClick={handleToggleComments}
-              className={`flex items-center gap-1.5 transition group ${
+              className={`flex items-center gap-1.5 transition ${
                 showComments ? 'text-x-accent' : 'text-x-muted hover:text-x-accent'
               }`}
               aria-label="コメントを表示"
             >
-              <MessageCircle
-                size={18}
-                className="transition"
-                fill={showComments ? 'currentColor' : 'none'}
-              />
-              <span className="text-sm">
-                {optimisticCommentCount > 0 ? optimisticCommentCount : ''}
-              </span>
+              <MessageCircle size={18} fill={showComments ? 'currentColor' : 'none'} />
+              <span className="text-sm">{optimisticCommentCount > 0 ? optimisticCommentCount : ''}</span>
             </button>
 
+            {/* Repost */}
+            <button
+              onClick={() => { setReposted(v => !v); setRepostCount(c => reposted ? c - 1 : c + 1) }}
+              className={`flex items-center gap-1.5 transition ${
+                reposted ? 'text-green-400' : 'text-x-muted hover:text-green-400'
+              }`}
+              aria-label="リポスト"
+            >
+              <Repeat2 size={18} />
+              <span className="text-sm">{repostCount > 0 ? repostCount : ''}</span>
+            </button>
+
+            {/* Like */}
             <button
               onClick={handleLike}
-              className={`flex items-center gap-1.5 transition group ${
-                optimisticLike.liked
-                  ? 'text-x-like'
-                  : 'text-x-muted hover:text-x-like'
+              className={`flex items-center gap-1.5 transition ${
+                optimisticLike.liked ? 'text-x-like' : 'text-x-muted hover:text-x-like'
               }`}
               aria-label={optimisticLike.liked ? 'いいねを取り消す' : 'いいねする'}
             >
-              <Heart
-                size={18}
-                className="transition"
-                fill={optimisticLike.liked ? 'currentColor' : 'none'}
-              />
-              <span className="text-sm">
-                {optimisticLike.count > 0 ? optimisticLike.count : ''}
-              </span>
+              <Heart size={18} fill={optimisticLike.liked ? 'currentColor' : 'none'} />
+              <span className="text-sm">{optimisticLike.count > 0 ? optimisticLike.count : ''}</span>
+            </button>
+
+            {/* Bookmark */}
+            <button
+              className="flex items-center gap-1.5 text-x-muted transition hover:text-x-accent"
+              aria-label="ブックマーク"
+            >
+              <BookmarkPlus size={18} />
+            </button>
+
+            {/* Share */}
+            <button
+              onClick={() => {
+                navigator.clipboard?.writeText(window.location.origin + '/post/' + post.id)
+              }}
+              className="flex items-center gap-1.5 text-x-muted transition hover:text-x-accent"
+              aria-label="共有"
+            >
+              <Share size={18} />
             </button>
           </div>
 

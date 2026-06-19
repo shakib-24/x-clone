@@ -3,20 +3,18 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useRef, useState, useEffect } from 'react'
-import { Home, Bell, User, LogOut, Feather } from 'lucide-react'
+import {
+  Home, Bell, User, LogOut, Feather,
+  Search, Mail, Bookmark, Settings, MoreHorizontal,
+} from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 import type { Profile } from '@/lib/definitions'
 
 function Avatar({ url, name }: { url: string | null; name: string | null }) {
   if (url) {
     return (
-      <img
-        src={url}
-        alt={name ?? 'User'}
-        width={40}
-        height={40}
-        className="h-10 w-10 rounded-full object-cover flex-shrink-0"
-      />
+      <img src={url} alt={name ?? 'User'} width={40} height={40}
+        className="h-10 w-10 rounded-full object-cover flex-shrink-0" />
     )
   }
   return (
@@ -56,13 +54,17 @@ export function Sidebar({
   }, [showMenu])
 
   const navItems = [
-    { href: '/home', icon: Home, label: 'ホーム', badge: 0 },
-    { href: '/notifications', icon: Bell, label: '通知', badge: unreadCount },
+    { href: '/home',      icon: Home,     label: 'ホーム',    badge: 0 },
+    { href: '/explore',   icon: Search,   label: '話題を検索', badge: 0 },
+    { href: '/notifications', icon: Bell, label: '通知',      badge: unreadCount },
+    { href: '/messages',  icon: Mail,     label: 'メッセージ', badge: 0 },
+    { href: '/bookmarks', icon: Bookmark, label: 'ブックマーク', badge: 0 },
+    { href: `/profile/${profile.username}`, icon: User, label: 'プロフィール', badge: 0 },
+    { href: '/settings',  icon: Settings, label: '設定',       badge: 0 },
   ]
 
   return (
     <div className="flex h-screen flex-col px-2 py-3 xl:px-4">
-
       {/* X Logo */}
       <Link
         href="/home"
@@ -71,11 +73,11 @@ export function Sidebar({
         <XLogo />
       </Link>
 
-      {/* Scrollable nav area — flex-1 absorbs all remaining space */}
+      {/* Nav — scrollable, fills available space */}
       <div className="flex flex-1 flex-col overflow-y-auto">
         <nav className="flex flex-col gap-0.5">
           {navItems.map(({ href, icon: Icon, label, badge }) => {
-            const active = pathname === href
+            const active = pathname === href || (href !== '/home' && pathname.startsWith(href) && href !== '/')
             return (
               <Link
                 key={href}
@@ -96,20 +98,6 @@ export function Sidebar({
               </Link>
             )
           })}
-
-          <Link
-            href={`/profile/${profile.username}`}
-            className={`flex items-center gap-4 rounded-full px-3 py-3 transition hover:bg-x-surface xl:pr-6 ${
-              pathname.startsWith('/profile') ? 'font-bold' : 'font-normal'
-            }`}
-          >
-            <User
-              size={26}
-              strokeWidth={pathname.startsWith('/profile') ? 2.5 : 1.75}
-              className="flex-shrink-0"
-            />
-            <span className="hidden xl:block text-xl">プロフィール</span>
-          </Link>
         </nav>
 
         {/* Compose button */}
@@ -124,7 +112,7 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* User card — always visible at bottom, outside the scrollable area */}
+      {/* User card — always visible at bottom */}
       <div className="relative mt-2 flex-shrink-0" ref={menuRef}>
         <button
           onClick={() => setShowMenu((v) => !v)}
@@ -139,6 +127,7 @@ export function Sidebar({
               @{profile.username}
             </p>
           </div>
+          <MoreHorizontal size={18} className="hidden xl:block flex-shrink-0 text-x-muted" />
         </button>
 
         {showMenu && (

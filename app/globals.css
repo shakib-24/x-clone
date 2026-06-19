@@ -11,6 +11,17 @@
   --x-danger:  #ff6b6b;
 }
 
+[data-theme="light"] {
+  --x-bg:      #ffffff;
+  --x-surface: #f7f9f9;
+  --x-border:  #eff3f4;
+  --x-text:    #0f1419;
+  --x-muted:   #536471;
+  --x-accent:  #1d9bf0;
+  --x-like:    #f91880;
+  --x-danger:  #e0245e;
+}
+
 @theme inline {
   --color-x-bg:      var(--x-bg);
   --color-x-surface: var(--x-surface);

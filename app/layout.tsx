@@ -20,15 +20,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={`${geist.variable} h-full`}>
-      <body className="min-h-full bg-[#000000] text-[#e7e9ea]">
+      <body className="min-h-full bg-x-bg text-x-text">
+        {/* Anti-flash theme script — runs sync before paint */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('x-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})()` }} />
         {children}
         <Toaster
           position="bottom-center"
           toastOptions={{
             style: {
-              background: "#16181c",
-              color: "#e7e9ea",
-              border: "1px solid #2f3336",
+              background: "var(--x-surface)",
+              color: "var(--x-text)",
+              border: "1px solid var(--x-border)",
             },
           }}
         />
