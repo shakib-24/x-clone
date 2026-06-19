@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useRef, useState, useEffect } from 'react'
 import { Home, Bell, User, LogOut, Feather } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 import type { Profile } from '@/lib/definitions'
@@ -41,6 +42,18 @@ export function Sidebar({
   unreadCount?: number
 }) {
   const pathname = usePathname()
+  const [showMenu, setShowMenu] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false)
+      }
+    }
+    if (showMenu) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showMenu])
 
   const navItems = [
     { href: '/home', icon: Home, label: 'ホーム', badge: 0 },
@@ -114,11 +127,14 @@ export function Sidebar({
       </div>
 
       {/* User account + logout */}
-      <div className="mt-auto">
-        <div className="group relative">
-          <div className="flex cursor-pointer items-center gap-3 rounded-full px-3 py-3 transition hover:bg-x-surface xl:pr-4">
+      <div className="mt-auto" ref={menuRef}>
+        <div className="relative">
+          <button
+            onClick={() => setShowMenu((v) => !v)}
+            className="flex w-full cursor-pointer items-center gap-3 rounded-full px-3 py-3 transition hover:bg-x-surface xl:pr-4"
+          >
             <Avatar url={profile.avatar_url} name={profile.display_name} />
-            <div className="hidden xl:block min-w-0">
+            <div className="hidden xl:block min-w-0 text-left">
               <p className="truncate font-bold text-sm text-x-text">
                 {profile.display_name}
               </p>
@@ -126,20 +142,22 @@ export function Sidebar({
                 @{profile.username}
               </p>
             </div>
-          </div>
+          </button>
 
           {/* Logout dropdown */}
-          <div className="absolute bottom-full left-0 mb-1 hidden w-max rounded-2xl border border-x-border bg-x-bg py-1 shadow-xl group-hover:block">
-            <form action={logout}>
-              <button
-                type="submit"
-                className="flex w-full items-center gap-3 px-4 py-3 text-sm font-bold text-x-text transition hover:bg-x-surface"
-              >
-                <LogOut size={16} />
-                <span>@{profile.username} からログアウト</span>
-              </button>
-            </form>
-          </div>
+          {showMenu && (
+            <div className="absolute bottom-full left-0 mb-1 w-max rounded-2xl border border-x-border bg-x-bg py-1 shadow-xl">
+              <form action={logout}>
+                <button
+                  type="submit"
+                  className="flex w-full items-center gap-3 px-4 py-3 text-sm font-bold text-x-text transition hover:bg-x-surface"
+                >
+                  <LogOut size={16} />
+                  <span>@{profile.username} からログアウト</span>
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       </div>
     </div>
