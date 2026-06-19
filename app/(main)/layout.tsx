@@ -33,7 +33,7 @@ export default async function MainLayout({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="hidden md:flex sticky top-0 h-screen w-[72px] xl:w-[275px] flex-shrink-0 flex-col border-r border-x-border overflow-y-auto">
+      <aside className="hidden md:block sticky top-0 h-screen w-[72px] xl:w-[275px] flex-shrink-0 border-r border-x-border overflow-hidden">
         <Sidebar profile={profile as Profile} unreadCount={unreadCount ?? 0} />
       </aside>
       <main className="flex-1 max-w-[600px] min-h-screen border-r border-x-border">

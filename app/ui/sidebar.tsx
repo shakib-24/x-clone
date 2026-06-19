@@ -61,8 +61,7 @@ export function Sidebar({
   ]
 
   return (
-    // min-h-full ensures this fills the aside (h-screen) even when content is short
-    <div className="flex min-h-full flex-col px-2 py-3 xl:px-4">
+    <div className="flex h-screen flex-col px-2 py-3 xl:px-4">
 
       {/* X Logo */}
       <Link
@@ -72,8 +71,8 @@ export function Sidebar({
         <XLogo />
       </Link>
 
-      {/* Nav + compose — flex-1 so this section grows and pushes user card to bottom */}
-      <div className="flex flex-1 flex-col">
+      {/* Scrollable nav area — flex-1 absorbs all remaining space */}
+      <div className="flex flex-1 flex-col overflow-y-auto">
         <nav className="flex flex-col gap-0.5">
           {navItems.map(({ href, icon: Icon, label, badge }) => {
             const active = pathname === href
@@ -98,7 +97,6 @@ export function Sidebar({
             )
           })}
 
-          {/* Profile link */}
           <Link
             href={`/profile/${profile.username}`}
             className={`flex items-center gap-4 rounded-full px-3 py-3 transition hover:bg-x-surface xl:pr-6 ${
@@ -126,30 +124,29 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* User account card — sits at bottom because sibling above has flex-1 */}
-      <div className="mt-4 relative" ref={menuRef}>
+      {/* User card — always visible at bottom, outside the scrollable area */}
+      <div className="relative mt-2 flex-shrink-0" ref={menuRef}>
         <button
           onClick={() => setShowMenu((v) => !v)}
           className="flex w-full items-center gap-3 rounded-full px-3 py-3 transition hover:bg-x-surface"
         >
           <Avatar url={profile.avatar_url} name={profile.display_name} />
-          <div className="hidden xl:flex xl:flex-1 min-w-0 flex-col items-start">
-            <span className="w-full truncate text-left font-bold text-sm text-x-text">
+          <div className="hidden xl:block min-w-0 flex-1 text-left">
+            <p className="truncate font-bold text-sm text-x-text leading-tight">
               {profile.display_name}
-            </span>
-            <span className="w-full truncate text-left text-sm text-x-muted">
+            </p>
+            <p className="truncate text-sm text-x-muted leading-tight">
               @{profile.username}
-            </span>
+            </p>
           </div>
         </button>
 
-        {/* Logout dropdown */}
         {showMenu && (
-          <div className="absolute bottom-full left-0 mb-1 w-max rounded-2xl border border-x-border bg-x-bg py-1 shadow-xl z-50">
+          <div className="absolute bottom-full left-0 z-50 mb-1 w-max rounded-2xl border border-x-border bg-x-bg py-1 shadow-xl">
             <form action={logout}>
               <button
                 type="submit"
-                className="flex w-full items-center gap-3 px-4 py-3 text-sm font-bold text-x-text transition hover:bg-x-surface whitespace-nowrap"
+                className="flex w-full items-center gap-3 whitespace-nowrap px-4 py-3 text-sm font-bold text-x-text transition hover:bg-x-surface"
               >
                 <LogOut size={16} />
                 @{profile.username} からログアウト
