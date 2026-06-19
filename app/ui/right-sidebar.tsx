@@ -72,23 +72,21 @@ export async function RightSidebar({ userId }: { userId: string }) {
           <div className="rounded-2xl bg-x-surface overflow-hidden">
             <h2 className="px-4 pt-4 pb-2 text-xl font-bold text-x-text">おすすめユーザー</h2>
             {suggestions.map((p) => (
-              <Link
-                key={p.id}
-                href={`/profile/${p.username}`}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-x-border/20 transition"
-              >
-                <Avatar url={p.avatar_url} name={p.display_name} />
-                <div className="min-w-0 flex-1">
+              <div key={p.id} className="flex items-center gap-3 px-4 py-3 hover:bg-x-border/20 transition">
+                <Link href={`/profile/${p.username}`} className="flex-shrink-0">
+                  <Avatar url={p.avatar_url} name={p.display_name} />
+                </Link>
+                <Link href={`/profile/${p.username}`} className="min-w-0 flex-1">
                   <p className="truncate font-bold text-sm text-x-text leading-tight">{p.display_name}</p>
                   <p className="truncate text-sm text-x-muted">@{p.username}</p>
-                </div>
-                <button
-                  onClick={(e) => e.preventDefault()}
+                </Link>
+                <Link
+                  href={`/profile/${p.username}`}
                   className="flex-shrink-0 rounded-full border border-x-text px-4 py-1 text-sm font-bold text-x-text transition hover:bg-x-text hover:text-x-bg"
                 >
                   フォロー
-                </button>
-              </Link>
+                </Link>
+              </div>
             ))}
             <Link href="/explore" className="block px-4 py-3 text-sm text-x-accent hover:bg-x-border/20 transition">
               もっと見る
