@@ -37,9 +37,11 @@ export async function signup(
     return { message: error.message }
   }
 
-  if (data.user) {
+  // Only upsert the profile when we have an active session (email confirmation disabled).
+  // When confirmation is required, the handle_new_auth_user DB trigger creates the profile.
+  if (data.session) {
     const { error: profileError } = await supabase.from('profiles').upsert({
-      id: data.user.id,
+      id: data.user!.id,
       username,
       display_name,
       provider: 'email',
@@ -47,13 +49,10 @@ export async function signup(
     if (profileError) {
       return { message: 'プロフィールの作成に失敗しました: ' + profileError.message }
     }
-  }
-
-  if (data.session) {
     redirect('/home')
   }
 
-  return { message: '確認メールをお送りしました。メールをご確認ください。' }
+  return { success: true, message: '確認メールをお送りしました。メールをご確認ください。' }
 }
 
 export async function login(

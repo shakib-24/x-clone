@@ -26,7 +26,7 @@ function GoogleIcon() {
 export default function SignupPage() {
   const [state, action, pending] = useActionState(signup, undefined)
 
-  if (state?.message && !state.errors) {
+  if (state?.success) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="w-full max-w-sm space-y-6 text-center">

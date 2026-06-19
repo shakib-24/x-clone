@@ -9,6 +9,7 @@ declare
   _display_name text;
   _avatar_url   text;
   _provider     text;
+  _meta_username text;
 begin
   _display_name := coalesce(
     new.raw_user_meta_data->>'full_name',
@@ -24,11 +25,16 @@ begin
     'email'
   );
 
-  -- Sanitise email prefix → unique username
-  _username :=
-    left(regexp_replace(split_part(new.email, '@', 1), '[^a-zA-Z0-9_]', '_', 'g'), 15)
-    || '_'
-    || floor(random() * 9000 + 1000)::text;
+  -- Use username from signup metadata if provided, else generate one
+  _meta_username := new.raw_user_meta_data->>'username';
+  if _meta_username is not null and _meta_username ~ '^[a-zA-Z0-9_]{3,20}$' then
+    _username := _meta_username;
+  else
+    _username :=
+      left(regexp_replace(split_part(new.email, '@', 1), '[^a-zA-Z0-9_]', '_', 'g'), 15)
+      || '_'
+      || floor(random() * 9000 + 1000)::text;
+  end if;
 
   insert into public.profiles (id, username, display_name, avatar_url, provider)
   values (new.id, _username, _display_name, _avatar_url, _provider)
