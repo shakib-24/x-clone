@@ -22,9 +22,23 @@ export async function createPost(
 
   if (!user) redirect('/login')
 
+  // Upload image if provided
+  let imageUrl: string | null = null
+  const imageFile = formData.get('image') as File | null
+  if (imageFile && imageFile.size > 0) {
+    const ext = imageFile.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+    const filePath = `${user.id}/${Date.now()}.${ext}`
+    const { error: uploadError } = await supabase.storage
+      .from('post-images')
+      .upload(filePath, imageFile, { contentType: imageFile.type, upsert: false })
+    if (uploadError) return { message: '画像のアップロードに失敗しました' }
+    const { data: { publicUrl } } = supabase.storage.from('post-images').getPublicUrl(filePath)
+    imageUrl = publicUrl
+  }
+
   const { error } = await supabase
     .from('posts')
-    .insert({ user_id: user.id, content: validated.data.content })
+    .insert({ user_id: user.id, content: validated.data.content, image_url: imageUrl })
 
   if (error) return { message: '投稿に失敗しました' }
 

@@ -10,7 +10,7 @@ export async function PostFeed({ userId }: { userId: string }) {
   const { data: rawPosts } = await supabase
     .from('posts')
     .select(
-      'id, user_id, content, likes_count, created_at, profile:profiles(username, display_name, avatar_url)'
+      'id, user_id, content, likes_count, comments_count, image_url, created_at, profile:profiles(username, display_name, avatar_url)'
     )
     .order('created_at', { ascending: false })
     .limit(20)

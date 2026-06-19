@@ -16,7 +16,7 @@ export async function ProfilePostFeed({
   const { data: rawPosts } = await supabase
     .from('posts')
     .select(
-      'id, user_id, content, likes_count, created_at, profile:profiles(username, display_name, avatar_url)'
+      'id, user_id, content, likes_count, comments_count, image_url, created_at, profile:profiles(username, display_name, avatar_url)'
     )
     .eq('user_id', profileId)
     .order('created_at', { ascending: false })
